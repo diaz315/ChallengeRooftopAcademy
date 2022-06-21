@@ -7,5 +7,6 @@ namespace ChallengeRooftopAcademy.Models
     public class ResponseToken
     {
         public string token { get; set; }
+        public string email { get; set; }
     }
 }

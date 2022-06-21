@@ -10,5 +10,7 @@ namespace ChallengeRooftopAcademy.Models
         public List<string> blocks { get; set; } = new List<string>();
         public string encoded { get; set; } = string.Empty;
         public string merged { get; set; } = string.Empty;
+
+        public bool consultedToApi { get; set; } = true;
     }
 }

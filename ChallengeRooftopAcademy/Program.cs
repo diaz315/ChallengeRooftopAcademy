@@ -33,10 +33,11 @@ namespace ChallengeRooftopAcademy
                 bool activate = true;
 
                 while (activate) {
-                    activate = false;
+                    //activate = false;
 
                     try
                     {
+                        Console.WriteLine("");
                         Console.WriteLine("Por favor ingrese un correo:");
                         Console.WriteLine("");
                         var email = Console.ReadLine();
@@ -47,11 +48,12 @@ namespace ChallengeRooftopAcademy
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                        activate = true;
+                        //activate = true;
                     }
                 }
                 Console.WriteLine("");
                 Console.WriteLine("Fin");
+                Console.WriteLine("");
             }
         }
     }

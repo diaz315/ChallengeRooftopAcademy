@@ -62,6 +62,10 @@ namespace ChallengeRooftopAcademy.Service
 
                         var result = await _rooftopService.getCheck(responseCheck);
 
+                        if (counter>0 && !result.consultedToApi) {
+                            counter -= 1;
+                        }
+
                         if (result != null && result.message)
                         {
                             resultado.Add(item.Value);

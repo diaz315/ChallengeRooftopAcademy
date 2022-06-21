@@ -61,6 +61,7 @@ namespace ChallengeRooftopAcademy.Service
             try
             {
                 var result = await executeRequest<ResponseToken>("token?email=" + email, true);
+                result.email = email;
                 _serviceCache.set("token", result);
             }
             catch (Exception ex)
@@ -107,7 +108,11 @@ namespace ChallengeRooftopAcademy.Service
                 //si no hay nada buscamos en el servicio
                 if (result == null)
                 {
-                    result = await executeRequest<ResponseCheck>("check?token=" + responseCheckCache.token, false,blocks);
+                    result = await executeRequest<ResponseCheck>("check?token=" + responseCheckCache.token, false, blocks);
+                    _serviceCache.set(key, result);
+                }
+                else {
+                    result.consultedToApi = false;
                 }
 
                 return result;

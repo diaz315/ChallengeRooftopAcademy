@@ -2,6 +2,7 @@
 using ChallengeRooftopAcademy.Service.Interfaces;
 using ChallengeRooftopAcademy.Util;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -82,6 +83,36 @@ namespace ChallengeRooftopAcademy.Service
                 }
 
                 var result = await executeRequest<Blocks>("blocks?token=" + responseTokenCache.token, true);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<ResponseCheck> checkAllChain(List<string> blocks, string key)
+        {
+            try {
+                string combinedString = string.Join("", blocks);
+
+                var result = _serviceCache.get<ResponseCheck>(combinedString);
+
+                if (result == null)
+                {
+                    result = await getCheck(new ResponseCheck
+                    {
+                        encoded = combinedString
+                    }) ?? new ResponseCheck();
+
+                    result.blocks = blocks;
+
+                    if (result.message )
+                    {
+                        _serviceCache.set(key, result);
+                    }
+                }
+
                 return result;
             }
             catch (Exception ex)

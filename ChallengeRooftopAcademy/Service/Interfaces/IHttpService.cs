@@ -11,5 +11,7 @@ namespace ChallengeRooftopAcademy.Service.Interfaces
         Task getToken(string email);
         Task<Blocks> getBlocks();
         Task<ResponseCheck> getCheck(ResponseCheck blocks);
+        Task<ResponseCheck> checkAllChain(List<string> bloks,string key);
+
     }
 }

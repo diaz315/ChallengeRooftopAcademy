@@ -44,15 +44,16 @@ namespace ChallengeRooftopAcademy.Service
                 {
                     foreach (var item in dictionaryCheck)
                     {
-                        counter++;
 
-                        //Como e el ultimo, no lo comparamos , ya que no hay mas con quien hacerlo y ahorramos una consulta del api
+                        //Como el ultimo, no lo comparamos , ya que no hay mas con quien hacerlo y ahorramos una consulta del api
                         if (dictionaryCheck.Count == 1)
                         {
                             resultado.Add(item.Value);
                             flagIteration = false;
                             break;
                         }
+
+                        counter++;
 
                         var responseCheck = new ResponseCheck
                         {
@@ -62,6 +63,7 @@ namespace ChallengeRooftopAcademy.Service
 
                         var result = await _rooftopService.getCheck(responseCheck);
 
+                        //si no pasa por la api sino por cache  elimina cantidad de veces de la consulta
                         if (counter>0 && !result.consultedToApi) {
                             counter -= 1;
                         }
@@ -83,22 +85,16 @@ namespace ChallengeRooftopAcademy.Service
                 }
 
                 //Concatenando lista de valores
-                string combinedString = string.Join("", resultado);
-
-                var finnalCompare = await _rooftopService.getCheck(new ResponseCheck
-                {
-                    encoded = combinedString,
-                });
-
-                finnalCompare ??= new ResponseCheck();
+                string key = string.Join("", blocksData);
+                var finnalCompare = await _rooftopService.checkAllChain(resultado, key);
 
                 var message = finnalCompare.message ? "Correcto" : "Incorrecto";
 
-                if (!finnalCompare.message)
-                    return new List<string>();
-
                 Console.WriteLine($"Resultado: {message}");
                 Console.WriteLine($"Total Api request: {counter}");
+
+                if (!finnalCompare.message)
+                    return new List<string>();
 
                 return resultado;
             }
@@ -122,9 +118,31 @@ namespace ChallengeRooftopAcademy.Service
                 //get token in cache to send
                 var responseTokenCache = _serviceCache.get<ResponseToken>("token");
 
+                //result
+                List<string> blocksList = new List<string>();
+
+                //if is not empty iterate
                 if (blocks.data.Any())
                 {
-                    var blocksList = await check(blocks.data, responseTokenCache.token);
+
+                    //check all the chains to avoid iterate if the result is correct
+
+                    string key = string.Join("", blocks.data);
+
+                    var resultcheck = await _rooftopService.checkAllChain(blocks.data, key);
+                    
+                    //Pseudo false
+                    resultcheck.message = false;
+
+                    if (resultcheck.message)
+                    {
+                        Console.WriteLine("__Consulta Directa de Cache__");
+                        blocksList = resultcheck.blocks;
+                    }
+                    else {
+                        blocksList = await check(blocks.data, responseTokenCache.token);
+                    }
+
                     int counter = 1;
                     Console.WriteLine("");
                     Console.WriteLine("Imprimiendo resultados:");
@@ -137,10 +155,9 @@ namespace ChallengeRooftopAcademy.Service
 
                         Console.WriteLine(sb);
                     }
-
-                    return blocksList;
                 }
-                return new List<string>();
+
+                return blocksList;
 
             }
             catch (Exception ex) {

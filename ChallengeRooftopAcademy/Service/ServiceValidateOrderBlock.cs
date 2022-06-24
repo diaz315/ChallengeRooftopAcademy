@@ -57,8 +57,8 @@ namespace ChallengeRooftopAcademy.Service
 
                         var responseCheck = new ResponseCheck
                         {
-                            blocks = new List<string> { flagBlockValue, item.Value },
-                            merged = flagBlockValue + item.Value
+                            blocks = new List<string> { flagBlockValue, item.Value }, //->Generando pareja de bloques a consultar
+                            merged = flagBlockValue + item.Value //-->Key para guardar en cache
                         };
 
                         var result = await _rooftopService.getCheck(responseCheck);
